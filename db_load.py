@@ -11,12 +11,12 @@ from data_gen import (
 
 load_dotenv()
 
-DBCON = os.getenv('DBCON') # Формат: password@localhost:5432
+DBCON = os.getenv('DBCON') # Format: password@localhost:5432
 engine = create_engine(f"postgresql://postgres:{DBCON}/marketplace_db")
 
 Base = declarative_base()
 
-# --- СХЕМА БД ---
+# --- DB SCHEMA ---
 
 class Cities(Base):
     __tablename__ = 'cities'
@@ -107,10 +107,10 @@ class ListingModerationLogs(Base):
     flagged_at = Column(DateTime)
     resolved = Column(Boolean, default=False)
 
-print("⚙️ Создание таблиц и ключей PostgreSQL...")
+print("⚙️ Creating PostgreSQL tables and keys...")
 Base.metadata.create_all(engine)
 
-print("🚀 Пакетная загрузка данных...")
+print("🚀 Batch loading data...")
 tables_map = [
     ("cities", cities_df),
     ("categories", categories_df),
@@ -134,6 +134,6 @@ for table_name, df in tables_map:
         chunksize=5000,
         method='multi'
     )
-    print(f"  └─ Таблица '{table_name}': успешно занесена.")
+    print(f"  └─ Table '{table_name}': loaded successfully.")
 
-print("\n🎉 Все таблицы онлайн-маркетплейса успешно занесены в базу данных!")
+print("\n🎉 All online marketplace tables have been loaded into the database!")

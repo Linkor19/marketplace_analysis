@@ -6,7 +6,7 @@ import datetime
 random.seed(42)
 np.random.seed(42)
 
-print("⏳ Генерация данных для Онлайн-Маркетплейса...")
+print("⏳ Generating data for the Online Marketplace...")
 
 # 1. Cities
 cities_df = pd.DataFrame([
@@ -63,7 +63,7 @@ for l_id in range(1, NUM_LISTINGS + 1):
     seller_city = users.loc[users['user_id'] == seller_id, 'city_id'].values[0]
     created_at = start_date + datetime.timedelta(days=random.randint(0, 50), hours=random.randint(0, 23))
 
-    # Генерация дубликатов для скоринга
+    # Generating duplicates for the scoring
     if l_id % 20 == 0:
         title = "Собака породы Лабрадор щенки"
         desc = "Продам щенка лабрадора с документами отличное здоровье"
@@ -71,7 +71,7 @@ for l_id in range(1, NUM_LISTINGS + 1):
         title = f"Товар или животное #{l_id}"
         desc = f"Описание объявления номер {l_id} с хорошими характеристиками."
 
-    is_active = random.random() > 0.25  # 25% "мертвых" или неактивных
+    is_active = random.random() > 0.25  # 25% "dead" or inactive
     listings_list.append({
         "listing_id": l_id,
         "seller_id": seller_id,
@@ -98,11 +98,11 @@ for l in listings_list[:400]:
     })
 listing_promotions = pd.DataFrame(promotions_list)
 
-# 7. View Bookings (Воронка просмотров и бронирований)
+# 7. View Bookings (Views and bookings funnel)
 bookings_list = []
 b_id = 1
 for l in listings_list:
-    if l["status"] == "active" and random.random() < 0.30:  # 30% смотрят и бронируют
+    if l["status"] == "active" and random.random() < 0.30:  # 30% view and book
         buyer_id = random.randint(1, NUM_USERS)
         bookings_list.append({
             "booking_id": b_id,
@@ -119,7 +119,7 @@ view_bookings = pd.DataFrame(bookings_list)
 deals_list = []
 d_id = 1
 for b in bookings_list:
-    if b["status"] == "confirmed" and random.random() < 0.65:  # 65% из брони в сделку
+    if b["status"] == "confirmed" and random.random() < 0.65:  # 65% from booking to deal
         deals_list.append({
             "deal_id": d_id,
             "booking_id": b["booking_id"],
@@ -134,7 +134,7 @@ discounts_list = []
 p_id = 1
 for up in user_profiles_list:
     if up["has_pet_profile"]:
-        # 40% тех у кого есть профиль питомца используют скидку
+        # 40% of those who have a pet profile use the discount
         if random.random() < 0.40:
             discounts_list.append({
                 "discount_id": p_id,
@@ -151,19 +151,19 @@ events_list = []
 ev_id = 1
 for u in users_list:
     reg_t = u["registered_at"]
-    # Ивенты регистрации
+    # Registration events
     events_list.append(
         {"event_id": ev_id, "user_id": u["user_id"], "event_type": "user_registered", "timestamp": reg_t})
     ev_id += 1
 
-    # Ивенты создания профиля
+    # Profile creation events
     up_row = user_profiles[user_profiles['user_id'] == u["user_id"]].iloc[0]
     if up_row["has_pet_profile"]:
         events_list.append({"event_id": ev_id, "user_id": u["user_id"], "event_type": "pet_profile_created",
                             "timestamp": up_row["updated_at"]})
         ev_id += 1
 
-    # Ивенты скидок
+    # Discount events
     has_disc = partner_discounts[partner_discounts['user_id'] == u["user_id"]]
     if len(has_disc) > 0:
         events_list.append({"event_id": ev_id, "user_id": u["user_id"], "event_type": "partner_discount_used",
@@ -176,7 +176,7 @@ clickstream_events = pd.DataFrame(events_list)
 mod_logs_list = []
 m_id = 1
 for l in listings_list:
-    if random.random() < 0.10:  # 10% объявлений имеют жалобы или проверки
+    if random.random() < 0.10:  # 10% of listings have complaints or moderation checks
         mod_logs_list.append({
             "log_id": m_id,
             "listing_id": l["listing_id"],
@@ -187,4 +187,4 @@ for l in listings_list:
         m_id += 1
 listing_moderation_logs = pd.DataFrame(mod_logs_list)
 
-print("✅ Генерация данных для маркетплейса полностью завершена!")
+print("✅ Marketplace data generation fully completed!")
